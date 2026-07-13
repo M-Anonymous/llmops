@@ -1,0 +1,31 @@
+from datetime import datetime
+
+from sqlalchemy import DateTime
+from sqlalchemy.sql import func
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass, Mapped, mapped_column
+
+
+class Base(MappedAsDataclass,DeclarativeBase):
+    """
+    Base 负责“告诉 SQLAlchemy 这是数据库表”；
+    """
+    pass
+
+
+class CommonMixin:
+    """
+    CommonMixin 负责“提供公共字段”。
+    """
+    createAt: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        default=None,  # ← 核心：允许 Python 层为 None
+        comment="创建时间"
+    )
+    updateAt: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),  # ← 自动更新（无需服务层逻辑）
+        default=None,
+        comment="更新时间"
+    )
