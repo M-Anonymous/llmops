@@ -8,7 +8,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import RedirectResponse
 
-from app.component.database.postgres import get_pg_session
+from app.component.database.postgres_client import get_pg_session
 from app.dto.oauth.auth_user_info import AuthUserInfo
 from app.entity.oauth.account_info import AccountInfo
 from app.service import AccountService

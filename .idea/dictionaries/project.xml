@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>isready</w>
+      <w>qdrant</w>
     </words>
   </dictionary>
 </component>

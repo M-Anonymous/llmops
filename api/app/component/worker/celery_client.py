@@ -4,12 +4,12 @@ from celery.result import AsyncResult
 
 
 class CeleryClient:
-    _celery_app = None
+    _celery_client = None
 
     @classmethod
-    def get_celery_app(cls) -> Celery:
+    def get_celery_client(cls) -> Celery:
         # 单例模式：确保 Celery 实例只被初始化一次
-        if cls._celery_app is None:
+        if cls._celery_client is None:
             # 1. 从环境变量读取并拼接 URL
             redis_host = os.getenv("REDIS_HOST", "localhost")
             redis_port = os.getenv("REDIS_PORT", "6379")
@@ -24,7 +24,7 @@ class CeleryClient:
             result_expires = int(os.getenv("CELERY_RESULT_EXPIRES", "3600"))
 
             # 3. 创建 Celery 实例并直接传入配置
-            cls._celery_app = Celery(
+            cls._celery_client = Celery(
                 "worker",
                 broker=broker_url,
                 backend=result_backend_url,
@@ -37,15 +37,17 @@ class CeleryClient:
                 }
             )
 
-        return cls._celery_app
+        return cls._celery_client
 
 
     # FastAPI 依赖注入生成器：用于在路由中获取任务状态
     @classmethod
     async def get_task_result(cls,task_id: str):
-        result = AsyncResult(task_id, app=cls.get_celery_app())
+        result = AsyncResult(task_id, app=cls.get_celery_client())
         return {
             "task_id": task_id,
             "status": result.status,
             "result": result.result if result.ready() else None
         }
+
+celery = CeleryClient.get_celery_client()

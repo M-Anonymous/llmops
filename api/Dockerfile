@@ -12,6 +12,4 @@ WORKDIR /app/api
 COPY .env main.py startup.sh ./app ./
 RUN chmod +x startup.sh
 
-EXPOSE 8888
-
 ENTRYPOINT ["/bin/bash", "/startup.sh"]

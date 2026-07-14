@@ -1,19 +1,100 @@
+x-common-env: &common-env
+  # JWT密钥
+  JWT_SECRET: m_anonymous@163.com
+
+  #Github鉴权配置
+  GITHUB_CLIENT_ID: Ov23liMHYoJV4D9YSMoO
+  GITHUB_CLIENT_SECRET: b06d44621dd25897fb3c6f5cdad7ff85b3e1976d
+  GITHUB_REDIRECT_URI: http://localhost:8888/auth/authorize
+
+  # Postgres数据库配置
+  POSTGRES_HOST: llmops-postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_USERNAME: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DATABASE: llmops
+
+  # Redis数据库配置
+  REDIS_HOST: llmops-redis
+  REDIS_PORT: 6379
+  REDIS_USERNAME:
+  REDIS_PASSWORD:
+  REDIS_DB: 0
+  REDIS_USE_SSL: False
+
+  #腾讯云COS配置
+  COS_SECRET_ID: AKIDc5JJ5ctvyub2EBsJUN1PYUCerpY3JKUX
+  COS_SECRET_KEY: yjcZMuDMGuJTRAetviGLCrIVTCi194j9
+  COS_REGION: ap-chongqing
+  COS_SCHEME: https
+  COS_BUCKET: immoc-1258847722
+
+  # Celery配置
+  CELERY_BROKER_DB: 1
+  CELERY_RESULT_BACKEND_DB: 1
+  CELERY_TASK_IGNORE_RESULT: False
+  CELERY_RESULT_EXPIRES: 3600
+  CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP: True
+
+
 services:
+
   llmops-api:
-    image: llmops-api
+    image: llmops-api:0.1.0
     build:
       context: ../api
       dockerfile: Dockerfile
     container_name: llmops-api
-
+    ports:
+      - "8888:8888"
+    restart: always
+    environment:
+      <<: *common-env
+      MODE: api
+      MIGRATION_ENABLED: 'true'
+      SERVER_WORKER_AMOUNT: 4
+      SERVER_THREAD_AMOUNT: 4
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
     depends_on:
-      - postgres
-      - redis
+      - llmops-redis
+      - llmops-postgres
+      - llmops-qdrant
 
+  llmops-celery:
+    image: llmops-api:0.1.0
+    container_name: llmops-celery
+    restart: always
+    environment:
+      <<: *common-env
+      MODE: celery
+      MIGRATION_ENABLED: 'false'
+      CELERY_APP_PATH: app.component.worker.celery_client.celery
+      #celery 默认使用多进程 prefork，如果想使用协程 gevent
+      CELERY_WORKER_CLASS: prefork
+      CELERY_WORKER_AMOUNT: 4
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
+    depends_on:
+      - llmops-redis
+      - llmops-postgres
+      - llmops-qdrant
 
-  postgres:
-    image: postgres:15-alpine
-    container_name: postgres
+  llmops-redis:
+    image: redis:6-alpine
+    container_name: llmops-redis
+    restart: always
+    volumes:
+      - ./volumes/redis/data:/var/lib/redis/data
+    healthcheck:
+      test: ["CMD","redis-cli","ping"]
+    ports:
+      - "6379:6379"
+
+  llmops-postgres:
+    image: postgres:16-alpine
+    container_name: llmops-postgres
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -28,16 +109,16 @@ services:
       retries: 30
     ports:
       - "5432:5432"
+
+  llmops-qdrant:
+    image: qdrant/qdrant:v1.15.3
+    container_name: llmops-qdrant
     restart: always
-
-  redis:
-    image: redis:6-alpine
-    container_name: redis
+    environment:
+      QDRANT__SERVICE__API_KEY: a8f9b2c4d6e7f1a3b5c9d2e4f6a7b8c1
     volumes:
-      - ./volumes/redis/data:/data
-    healthcheck:
-      test: ["CMD","redis-cli","ping"]
+      - ./volumes/qdrant_storage:/var/lib/qdrant/data
+    # 暴露 REST API 和 gRPC 端口
     ports:
-      - "6379:6379"
-
-  celery:
+      - "6333:6333"   # REST API + Web Dashboard
+      - "6334:6334"   # gRPC 端口（Python 客户端高性能连接）

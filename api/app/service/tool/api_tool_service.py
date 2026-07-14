@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.component.database.postgres import get_pg_session
+from app.component.database.postgres_client import get_pg_session
 from app.entity import ApiToolEntity
 from app.entity.tool.tool_entity import ApiToolRelation
 from app.request.tool.tool import ApiToolRequest
