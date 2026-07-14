@@ -23,8 +23,8 @@ x-common-env: &common-env
   REDIS_USE_SSL: False
 
   #腾讯云COS配置
-  COS_SECRET_ID: AKID0RvLyUvCIMc8Vp6GLKDxbCdx87uVu6A4
-  COS_SECRET_KEY: ugKvQo6GJDgyEYpzBKMH3BQbmqjQuHUV
+  COS_SECRET_ID:
+  COS_SECRET_KEY:
   COS_REGION: ap-chongqing
   COS_SCHEME: https
   COS_BUCKET: immoc-1258847722
