@@ -1,2 +1,4 @@
 ./api/.venv
 ./api/.env
+./pg_data
+./volumes
