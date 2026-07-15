@@ -81,7 +81,7 @@ services:
     environment:
       <<: *common-env
       MODE: celery
-      CELERY_APP_PATH: app.component.worker.celery_client.celery
+      CELERY_APP_PATH: app.component.worker.celery_client.celery_client
       #celery 默认使用多进程 prefork，如果想使用协程 gevent
       CELERY_WORKER_CLASS: prefork
       CELERY_WORKER_AMOUNT: 4

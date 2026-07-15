@@ -23,3 +23,5 @@ class CosClient:
     @classmethod
     def get_bucket_name(cls):
         return os.getenv("COS_BUCKET")
+
+cos_client = CosClient.get_cos_client()

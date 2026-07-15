@@ -1,6 +1,6 @@
 import uuid
-from sqlalchemy import String, Text, JSON, ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Text, JSON, Integer, Boolean
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.entity.parent.base import Base, CommonMixin
 
@@ -51,6 +51,12 @@ class ApiToolEntity(Base, CommonMixin):
         comment="API 调用配置"
     )
 
+    enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+        comment="是否启用"
+    )
 
     createBy: Mapped[int] = mapped_column(
         Integer,
@@ -73,22 +79,18 @@ class ApiToolRelation(Base, CommonMixin):
     """
     __tablename__ = 'api_tool_relation'
 
-    # 2. 外键与索引
     account_id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
         nullable=False,
         default=None,
-        index=True,
         comment="所属账户ID"
     )
 
     tool_id: Mapped[str] = mapped_column(
         String(36),
-        ForeignKey('api_tool_entity.id'),
         primary_key=True,
         default=None,
         nullable=False,
-        index=True,
         comment="关联的工具id"
     )

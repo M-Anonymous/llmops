@@ -26,3 +26,5 @@ class RedisAsyncClient:
             cls._redis_async_client = redis.Redis(connection_pool=redis_pool)
 
         return cls._redis_async_client
+
+redis_async_client = RedisAsyncClient.get_redis_client()

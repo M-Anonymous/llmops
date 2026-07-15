@@ -13,7 +13,6 @@ async def create_tool(request: ApiToolRequest,api_tool_service: ApiToolService =
     await api_tool_service.add_tool(request)
     return "success"
 
-
 @api_tool_router.get("/get_tools")
 async def create_tool(api_tool_service: ApiToolService = Depends(get_api_tool_service)):
     return await api_tool_service.get_tools()

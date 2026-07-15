@@ -2,3 +2,4 @@
 ./api/.env
 ./pg_data
 ./volumes
+.idea

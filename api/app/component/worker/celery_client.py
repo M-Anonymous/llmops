@@ -50,4 +50,4 @@ class CeleryClient:
             "result": result.result if result.ready() else None
         }
 
-celery = CeleryClient.get_celery_client()
+celery_client = CeleryClient.get_celery_client()

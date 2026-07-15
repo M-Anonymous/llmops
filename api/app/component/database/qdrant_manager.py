@@ -32,8 +32,4 @@ class QdrantClientManager:
             await cls._client.close()
             cls._client = None
 
-async def get_qdrant_client() -> AsyncQdrantClient | None:
-    """
-    在路由中通过 Depends(get_qdrant_client) 使用
-    """
-    return QdrantClientManager.get_client()
+qdrant_client = QdrantClientManager.get_client()
