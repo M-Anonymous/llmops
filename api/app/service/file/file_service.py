@@ -1,77 +1,118 @@
 import os
+import re
 import uuid
 
-from fastapi import UploadFile, HTTPException
-from qcloud_cos import CosServiceError
-
+from fastapi import HTTPException
 from app.component import CosClient
+
+# 允许上传的文件后缀与 Content-Type 映射
+ALLOWED_EXTENSIONS: dict[str, str] = {
+    ".pdf": "application/pdf",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".txt": "text/plain",
+    ".md": "text/markdown",
+}
 
 
 class FileService:
     """基于腾讯云 COS 的文件业务服务"""
 
     @classmethod
-    async def upload_file(cls, file: UploadFile, folder: str = "uploads") -> dict:
-        """上传文件到 COS"""
-        try:
-            # 1. 直接获取现有的单例客户端
-            client = CosClient.get_cos_client()
-            bucket = CosClient.get_bucket_name()
+    async def get_presigned_upload_url(
+        cls,
+        filename: str,
+        extension: str,
+        folder: str = "uploads",
+    ) -> dict:
+        """生成 COS PUT 预签名上传 URL，限制文件格式"""
+        safe_filename = cls._validate_filename(filename)
+        ext, content_type = cls._resolve_extension(extension)
+        expire_seconds = int(os.getenv("COS_PRESIGNED_EXPIRE", "900"))
 
-            if file.filename is None:
-                raise HTTPException(status_code=400, detail="Uploaded file must have a filename")
-            # 2. 生成唯一文件名，防止覆盖
-            file_ext = os.path.splitext(file.filename)[1]
-            unique_filename = f"{folder}/{uuid.uuid4().hex}{file_ext}"
+        client = CosClient.get_cos_client()
+        bucket = CosClient.get_bucket_name()
+        if not bucket:
+            raise HTTPException(status_code=500, detail="COS 配置不完整")
 
-            # 3. 读取文件内容
-            content = await file.read()
+        cos_key = cls._build_cos_key(folder, safe_filename, ext)
+        upload_url = client.get_presigned_url(
+            Bucket=bucket,
+            Key=cos_key,
+            Method="POST",
+            Expired=expire_seconds,
+            Headers={"Content-Type": content_type},
+        )
 
-            # 4. 上传到 COS
-            response = client.put_object(
-                Bucket=bucket,
-                Body=content,
-                Key=unique_filename,
-                ContentType=file.content_type or "application/octet-stream"
+        return {
+            "upload_url": upload_url,
+            "cos_key": cos_key,
+            "filename": f"{safe_filename}{ext}",
+            "content_type": content_type,
+            "expire_seconds": expire_seconds,
+        }
+
+    @classmethod
+    async def get_presigned_download_url(cls, cos_key: str) -> dict:
+        """生成 COS 预签名下载 URL"""
+        key = cls._validate_cos_key(cos_key)
+        expire_seconds = int(os.getenv("COS_PRESIGNED_EXPIRE", "900"))
+
+        client = CosClient.get_cos_client()
+        bucket = CosClient.get_bucket_name()
+        if not bucket:
+            raise HTTPException(status_code=500, detail="COS 配置不完整")
+
+        download_url = client.get_presigned_download_url(
+            Bucket=bucket,
+            Key=key,
+            Expired=expire_seconds,
+        )
+
+        return {
+            "download_url": download_url,
+            "cos_key": key,
+            "expire_seconds": expire_seconds,
+        }
+
+    @staticmethod
+    def _normalize_extension(extension: str) -> str:
+        ext = extension.strip().lower()
+        if not ext.startswith("."):
+            ext = f".{ext}"
+        return ext
+
+    @staticmethod
+    def _validate_filename(filename: str) -> str:
+        safe_name = os.path.basename(filename.strip())
+        if not safe_name:
+            raise HTTPException(status_code=400, detail="文件名不能为空")
+        if safe_name in {".", ".."} or re.search(r'[\\/:*?"<>|]', safe_name):
+            raise HTTPException(status_code=400, detail="文件名包含非法字符")
+        return safe_name
+
+    @classmethod
+    def _resolve_extension(cls, extension: str) -> tuple[str, str]:
+        ext = cls._normalize_extension(extension)
+        content_type = ALLOWED_EXTENSIONS.get(ext)
+        if not content_type:
+            allowed = ", ".join(sorted(ALLOWED_EXTENSIONS.keys()))
+            raise HTTPException(
+                status_code=400,
+                detail=f"不支持的文件格式: {ext}，允许格式: {allowed}",
             )
-
-            return {
-                "status": "success",
-                "filename": file.filename,
-                "cos_key": unique_filename,
-                "etag": response.get("ETag", "").strip('"'),
-                "size": len(content)
-            }
-
-        except CosServiceError as e:
-            raise HTTPException(status_code=500, detail=f"COS upload failed: {e.get_error_msg()}")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+        return ext, content_type
 
     @classmethod
-    async def download_file(cls, cos_key: str) -> bytes:
-        """从 COS 下载文件"""
-        try:
-            client = CosClient.get_cos_client()
-            bucket = CosClient.get_bucket_name()
-
-            response = client.get_object(Bucket=bucket, Key=cos_key)
-            return response["Body"].get_raw_stream().read()
-
-        except CosServiceError as e:
-            if e.get_error_code() == "NoSuchKey":
-                raise HTTPException(status_code=404, detail="File not found")
-            raise HTTPException(status_code=500, detail=f"COS download failed: {e.get_error_msg()}")
+    def _build_cos_key(cls, folder: str, filename: str, extension: str) -> str:
+        folder = folder.strip("/")
+        return f"{folder}/{uuid.uuid4().hex}_{filename}{extension}"
 
     @classmethod
-    async def delete_file(cls, cos_key: str) -> dict:
-        """从 COS 删除文件"""
-        try:
-            client = CosClient.get_cos_client()
-            bucket = CosClient.get_bucket_name()
-
-            client.delete_object(Bucket=bucket, Key=cos_key)
-            return {"status": "success", "message": f"File {cos_key} deleted"}
-
-        except CosServiceError as e:
-            raise HTTPException(status_code=500, detail=f"COS delete failed: {e.get_error_msg()}")
+    def _validate_cos_key(cls, cos_key: str) -> str:
+        key = cos_key.strip()
+        if not key:
+            raise HTTPException(status_code=400, detail="cos_key 不能为空")
+        if key.startswith("/") or ".." in key:
+            raise HTTPException(status_code=400, detail="cos_key 不合法")
+        return key

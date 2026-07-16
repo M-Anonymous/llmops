@@ -44,7 +44,7 @@ class LibraryInfo(Base,CommonMixin):
 
     # 3. 字符串长度 + 注释
     desc: Mapped[str] = mapped_column(
-        String(50),
+        String(255),
         nullable=False,
         default=None,
         comment="知识库描述"
@@ -70,11 +70,32 @@ class DocumentInfo(Base,CommonMixin):
         comment="关联的知识库id"
     )
 
-    file_id: Mapped[str] = mapped_column(
+    file_name: Mapped[str] = mapped_column(
         String(255),
         default=None,
         nullable=False,
-        comment="关联的文件id"
+        comment="关联的知识库id"
+    )
+
+    file_ext: Mapped[str] = mapped_column(
+        String(36),
+        default=None,
+        nullable=False,
+        comment="关联的知识库id"
+    )
+
+    desc: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        default=None,
+        comment="文档描述"
+    )
+
+    file_key: Mapped[str] = mapped_column(
+        String(255),
+        default=None,
+        nullable=False,
+        comment="关联的文件key"
     )
 
 class SegmentInfo(Base,CommonMixin):
