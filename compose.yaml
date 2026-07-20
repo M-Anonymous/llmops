@@ -107,7 +107,8 @@ services:
       - "6379:6379"
 
   llmops-postgres:
-    image: postgres:16-alpine
+    #采用支持关系和向量存储的pgvector
+    image: pgvector/pgvector:pg16
     container_name: llmops-postgres
     restart: always
     environment:

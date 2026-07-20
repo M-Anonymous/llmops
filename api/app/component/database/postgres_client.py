@@ -41,3 +41,10 @@ async def get_pg_session():
             # 确保异常情况下也能安全关闭 Session，归还连接池
             await session.close()
 
+def get_db_uri() -> str:
+    username = os.getenv("POSTGRES_USERNAME", "postgres")
+    password = os.getenv("POSTGRES_PASSWORD", "")
+    host = os.getenv("POSTGRES_HOST", "localhost")
+    port = os.getenv("POSTGRES_PORT", "5432")
+    dbname = os.getenv("POSTGRES_DATABASE", "postgres")
+    return f"postgresql://{username}:{password}@{host}:{port}/{dbname}"

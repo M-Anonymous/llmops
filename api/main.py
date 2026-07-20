@@ -1,10 +1,12 @@
-import uvicorn
+# 最先加载环境变量
 from dotenv import load_dotenv
+load_dotenv(verbose=True)
+
+
+import uvicorn
 from fastapi import FastAPI, Query
 from app.router import oauth_router,api_tool_router,file_router,library_router
 
-#加载环境变量
-load_dotenv(verbose=True)
 app = FastAPI()
 
 @app.get("/")

@@ -10,6 +10,10 @@ class CosClient:
 
     @classmethod
     def get_cos_client(cls):
+        a = os.getenv("COS_SECRET_ID"),
+        b = os.getenv("COS_SECRET_KEY"),
+        c = os.getenv("COS_REGION"),
+        d = os.getenv("COS_SCHEME")
         if cls._cos_client is None:
             cos_config = CosConfig(
                 SecretId=os.getenv("COS_SECRET_ID"),
