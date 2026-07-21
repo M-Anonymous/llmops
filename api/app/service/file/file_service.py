@@ -28,7 +28,7 @@ class FileService:
         """生成 COS PUT 预签名上传 URL，限制文件格式"""
         safe_filename = cls._validate_filename(filename)
         ext, content_type = cls._resolve_extension(extension)
-        expire_seconds = int(os.getenv("COS_PRESIGNED_EXPIRE", "900"))
+        expire_seconds = int(os.getenv("COS_PRESIGNED_EXPIRE", "300"))
 
         client = CosClient.get_cos_client()
         bucket = CosClient.get_bucket_name()
@@ -39,7 +39,7 @@ class FileService:
         upload_url = client.get_presigned_url(
             Bucket=bucket,
             Key=cos_key,
-            Method="POST",
+            Method="PUT",
             Expired=expire_seconds,
             Headers={"Content-Type": content_type},
         )
@@ -116,3 +116,15 @@ class FileService:
         if key.startswith("/") or ".." in key:
             raise HTTPException(status_code=400, detail="cos_key 不合法")
         return key
+
+
+    @classmethod
+    def get_file_type_from_url(cls, url: str) -> str | None:
+        """从预签名 URL 中提取文件类型"""
+        # 1. 先去掉 ? 后面的所有查询参数
+        path_part = url.split('?')[0]
+        # 2. 再从路径中提取文件名和扩展名
+        file_name = path_part.split('/')[-1]
+        if '.' in file_name:
+            return file_name.split('.')[-1]  # 返回如 'pdf', 'txt'
+        return None

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 
 from app.request.tool.tool import ApiToolRequest
 from app.service.tool.api_tool_service import ApiToolService, get_api_tool_service
-from app.tool.tool_adapter.tool_adapter import ApiToolAdapter, get_api_tool_adapter
+from app.agent.tool.tool_adapter.tool_adapter import ApiToolAdapter, get_api_tool_adapter
 
 api_tool_router = APIRouter(prefix="/tool", tags=["tool"])
 

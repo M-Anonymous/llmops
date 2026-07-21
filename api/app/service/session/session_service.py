@@ -3,7 +3,7 @@ from fastapi import Depends
 from app.request.session.session_request import SessionRequest
 from app.repository.session.session_repository import SessionRepository, get_session_repository
 from app.agent.pool.agent_session_pool import AgentSessionPool
-from app.tool.builtin_tool.memory_tool import Context
+from app.agent.tool.builtin_tool.memory_tool import Context
 
 
 class SessionService:

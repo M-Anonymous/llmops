@@ -5,7 +5,7 @@ from fastapi import Depends
 from langchain_core.tools import BaseTool
 from importlib.util import spec_from_file_location, module_from_spec
 from app.service.tool.api_tool_service import ApiToolService, get_api_tool_service
-from app.tool.api_tool.api_tool_entity_2_tool import get_api_tool_from_entity
+from app.agent.tool.api_tool.api_tool_entity_2_tool import get_api_tool_from_entity
 
 
 class ToolAdapter(ABC):

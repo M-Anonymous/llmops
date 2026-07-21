@@ -6,7 +6,7 @@ from langgraph.store.postgres import PostgresStore
 from langgraph.store.postgres.base import PostgresIndexConfig
 from psycopg.rows import dict_row
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.embedding.embedding import embeddings
+from app.agent.embedding.embedding import embeddings
 
 class PostgresClient:
 

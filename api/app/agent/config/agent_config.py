@@ -4,7 +4,7 @@ from typing import Sequence
 from langchain_core.language_models import BaseChatModel
 from langchain_core.tools import BaseTool, tool
 from langchain_openai import ChatOpenAI
-from app.tool.builtin_tool.memory_tool import save_user_info,get_user_info
+from app.agent.tool.builtin_tool.memory_tool import save_user_info,get_user_info
 
 
 class AgentConfig:
