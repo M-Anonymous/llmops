@@ -71,8 +71,6 @@ services:
         condition: service_healthy
       llmops-postgres:
         condition: service_started
-      llmops-qdrant:
-        condition: service_started
 
   llmops-celery:
     image: llmops-api:0.1.0
@@ -91,8 +89,6 @@ services:
       llmops-redis:
         condition: service_healthy
       llmops-postgres:
-        condition: service_started
-      llmops-qdrant:
         condition: service_started
 
   llmops-redis:
@@ -124,21 +120,3 @@ services:
       retries: 30
     ports:
       - "5432:5432"
-
-  llmops-qdrant:
-    image: qdrant/qdrant:v1.15.3
-    container_name: llmops-qdrant
-    restart: always
-    environment:
-      QDRANT__SERVICE__API_KEY: a8f9b2c4d6e7f1a3b5c9d2e4f6a7b8c1
-    volumes:
-      - qdrant_data_volume:/var/lib/qdrant/data
-    # 暴露 REST API 和 gRPC 端口
-    ports:
-      - "6333:6333"   # REST API + Web Dashboard
-      - "6334:6334"   # gRPC 端口（Python 客户端高性能连接）
-    healthcheck:
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
