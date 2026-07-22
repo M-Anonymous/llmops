@@ -16,13 +16,13 @@ class CommonMixin:
     """
     CommonMixin 负责“提供公共字段”。
     """
-    createAt: Mapped[datetime] = mapped_column(
+    create_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         default=None,  # ← 核心：允许 Python 层为 None
         comment="创建时间"
     )
-    updateAt: Mapped[datetime] = mapped_column(
+    update_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),  # ← 自动更新（无需服务层逻辑）

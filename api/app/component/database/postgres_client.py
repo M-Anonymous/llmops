@@ -1,5 +1,6 @@
 import os
 from typing import Optional
+
 from psycopg_pool import AsyncConnectionPool
 from langchain_postgres import PGEngine, PGVectorStore
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
@@ -8,6 +9,7 @@ from langgraph.store.postgres.base import PostgresIndexConfig
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from app.agent.embedding.embedding import embeddings
+from app.component.config.pg_hybrid_search_config import PGHybridSearchConfig
 
 
 class PostgresClient:
@@ -76,7 +78,10 @@ class PostgresClient:
             engine=pg_engine,
             table_name='vector_store',  # 建议使用有意义的表名
             id_column='id',
+            metadata_columns=["account_id","library_id","document_id","chunk_index","create_at","update_at"],
+            metadata_json_column="metadata",
             embedding_service=embeddings,
+            #不好用 hybrid_search_config=PGHybridSearchConfig()
         )
         print("✅ 向量存储 (VectorStore) 准备就绪。")
         # --- 5. 执行数据库表初始化 (仅首次启动) ---
@@ -119,6 +124,7 @@ class PostgresClient:
         return cls._async_session_maker
 
 
+
 # --- FastAPI 依赖注入 ---
 async def get_pg_session():
     """用于 FastAPI 依赖项的异步会话生成器。"""
@@ -128,3 +134,4 @@ async def get_pg_session():
             yield session
         finally:
             await session.close()
+
