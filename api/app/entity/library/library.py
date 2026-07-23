@@ -1,9 +1,7 @@
-import uuid
-
 from sqlalchemy import String, Integer, Text, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.entity.parent.base import Base,CommonMixin
+from app.entity.parent.base import Base, CommonMixin, UUID_PK_KWARGS
 
 """
 内部知识库，只上传文件
@@ -17,7 +15,7 @@ class LibraryInfo(Base,CommonMixin):
     id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
+        **UUID_PK_KWARGS,
         comment="知识库全局唯一标识符(UUID)"
     )
 
@@ -59,8 +57,15 @@ class DocumentInfo(Base,CommonMixin):
     id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
+        **UUID_PK_KWARGS,
         comment="文档全局唯一标识符(UUID)"
+    )
+
+    account_id: Mapped[int] = mapped_column(
+        Integer,
+        default=None,
+        nullable=False,
+        comment="关联的用户id"
     )
 
     library_id: Mapped[str] = mapped_column(
@@ -98,15 +103,15 @@ class DocumentInfo(Base,CommonMixin):
         comment="关联的文件key"
     )
 
-class SegmentInfo(Base,CommonMixin):
-    __tablename__ = 'segment_info'
+class ChunkInfo(Base,CommonMixin):
+    __tablename__ = 'chunk_info'
 
     # 1. 主键与基础标识
     id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
-        comment="文档全局唯一标识符(UUID)"
+        **UUID_PK_KWARGS,
+        comment="分片全局唯一标识符(UUID)"
     )
 
     document_id: Mapped[str] = mapped_column(
@@ -153,7 +158,7 @@ class LibraryRelation(Base,CommonMixin):
     agent_id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
+        **UUID_PK_KWARGS,
         comment="关联的知识库id"
     )
 
@@ -161,7 +166,7 @@ class LibraryRelation(Base,CommonMixin):
     workflow_id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
+        **UUID_PK_KWARGS,
         comment="关联的工作流id"
     )
 
@@ -169,6 +174,6 @@ class LibraryRelation(Base,CommonMixin):
     library_id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
+        **UUID_PK_KWARGS,
         comment="关联的知识库id"
     )

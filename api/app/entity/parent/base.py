@@ -1,8 +1,20 @@
 from datetime import datetime
+import uuid
 
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass, Mapped, mapped_column
+
+
+def uuid_hex() -> str:
+    return uuid.uuid4().hex
+
+
+# MappedAsDataclass 需用 default_factory + insert_default，不能用 default=callable
+UUID_PK_KWARGS = {
+    "insert_default": uuid_hex,
+    "default_factory": uuid_hex,
+}
 
 
 class Base(MappedAsDataclass,DeclarativeBase):

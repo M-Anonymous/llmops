@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+from urllib.parse import urlparse
 
 from fastapi import HTTPException
 from app.component import CosClient
@@ -17,6 +18,14 @@ ALLOWED_EXTENSIONS: dict[str, str] = {
 
 class FileService:
     """基于腾讯云 COS 的文件业务服务"""
+
+    @staticmethod
+    def _to_proxied_cos_url(cos_url: str) -> str:
+        """将 COS 完整 URL 转为 Nginx 代理路径（如 /cos/uploads/xxx?sign=...）"""
+        parsed = urlparse(cos_url)
+        prefix = os.getenv("COS_PROXY_PREFIX", "/cos").rstrip("/")
+        query = f"?{parsed.query}" if parsed.query else ""
+        return f"{prefix}{parsed.path}{query}"
 
     @classmethod
     async def get_presigned_upload_url(
@@ -45,7 +54,7 @@ class FileService:
         )
 
         return {
-            "upload_url": upload_url,
+            "upload_url": cls._to_proxied_cos_url(upload_url),
             "cos_key": cos_key,
             "filename": f"{safe_filename}{ext}",
             "content_type": content_type,
@@ -53,27 +62,36 @@ class FileService:
         }
 
     @classmethod
-    async def get_presigned_download_url(cls, cos_key: str) -> dict:
-        """生成 COS 预签名下载 URL"""
-        key = cls._validate_cos_key(cos_key)
+    async def get_presigned_download_url(cls, file_key: str) -> dict:
+        """生成 COS 预签名下载 URL（浏览器侧，经 Nginx 代理）"""
+        key = cls._validate_file_key(file_key)
         expire_seconds = int(os.getenv("COS_PRESIGNED_EXPIRE", "900"))
+        download_url = cls._build_presigned_download_url(key, expire_seconds)
 
+        return {
+            "download_url": cls._to_proxied_cos_url(download_url),
+            "cos_key": key,
+            "expire_seconds": expire_seconds,
+        }
+
+    @classmethod
+    async def get_direct_download_url(cls, file_key: str) -> str:
+        """生成 COS 预签名下载 URL（服务端直连，不走 Nginx 代理）"""
+        key = cls._validate_file_key(file_key)
+        expire_seconds = int(os.getenv("COS_PRESIGNED_EXPIRE", "900"))
+        return cls._build_presigned_download_url(key, expire_seconds)
+
+    @classmethod
+    def _build_presigned_download_url(cls, file_key: str, expire_seconds: int) -> str:
         client = CosClient.get_cos_client()
         bucket = CosClient.get_bucket_name()
         if not bucket:
             raise HTTPException(status_code=500, detail="COS 配置不完整")
-
-        download_url = client.get_presigned_download_url(
+        return client.get_presigned_download_url(
             Bucket=bucket,
-            Key=key,
+            Key=file_key,
             Expired=expire_seconds,
         )
-
-        return {
-            "download_url": download_url,
-            "cos_key": key,
-            "expire_seconds": expire_seconds,
-        }
 
     @staticmethod
     def _normalize_extension(extension: str) -> str:
@@ -109,7 +127,7 @@ class FileService:
         return f"{folder}/{uuid.uuid4().hex}_{filename}{extension}"
 
     @classmethod
-    def _validate_cos_key(cls, cos_key: str) -> str:
+    def _validate_file_key(cls, cos_key: str) -> str:
         key = cos_key.strip()
         if not key:
             raise HTTPException(status_code=400, detail="cos_key 不能为空")

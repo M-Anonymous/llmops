@@ -1,6 +1,13 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
-from app.request.library.library import LibraryDeleteRequest, LibraryRequest, LibraryUpdateRequest
+from app.request.library.library import (
+    DocumentAddRequest,
+    DocumentDeleteRequest,
+    DocumentDownloadRequest,
+    LibraryDeleteRequest,
+    LibraryRequest,
+    LibraryUpdateRequest,
+)
 from app.service.library.library_service import LibraryService, get_library_service
 
 library_router = APIRouter(prefix="/library", tags=["library"])
@@ -35,33 +42,47 @@ async def get_library_list(
     return await library_service.get_library_list()
 
 @library_router.post("/document/add")
-async def add_document():
-    pass
+async def add_document(
+    request: DocumentAddRequest,
+    library_service: LibraryService = Depends(get_library_service),
+):
+    document_id = await library_service.add_document(request)
+    return {"id": document_id}
 
 @library_router.post("/document/delete")
-async def delete_document():
-    pass
+async def delete_document(
+    request: DocumentDeleteRequest,
+    library_service: LibraryService = Depends(get_library_service),
+):
+    await library_service.delete_document(request)
+    return {"status": "success"}
 
-@library_router.post("/document/update")
-async def update_document():
-    pass
+@library_router.post("/document/download")
+async def download_document(
+    request: DocumentDownloadRequest,
+    library_service: LibraryService = Depends(get_library_service),
+):
+    return await library_service.download_document(request)
 
 @library_router.get("/document/list")
-async def get_document_list():
+async def get_document_list(
+    library_id: str = Query(..., description="知识库ID"),
+    library_service: LibraryService = Depends(get_library_service),
+):
+    return await library_service.get_document_list(library_id)
+
+@library_router.post("/document/chunk/add")
+async def add_chunk():
     pass
 
-@library_router.post("/document/segment/add")
-async def add_segment():
+@library_router.post("/document/chunk/delete")
+async def delete_chunk():
     pass
 
-@library_router.post("/document/segment/delete")
-async def delete_segment():
+@library_router.post("/document/chunk/update")
+async def update_chunk():
     pass
 
-@library_router.post("/document/segment/update")
-async def update_segment():
-    pass
-
-@library_router.get("/document/segment/list")
-async def get_segment_list():
+@library_router.get("/document/chunk/list")
+async def get_chunk_list():
     pass

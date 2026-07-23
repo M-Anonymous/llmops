@@ -1,8 +1,7 @@
-import uuid
 from sqlalchemy import String, Text, JSON, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.entity.parent.base import Base, CommonMixin
+from app.entity.parent.base import Base, CommonMixin, UUID_PK_KWARGS
 
 
 # 假设 Base 和 CommonMixin 已经导入
@@ -17,7 +16,7 @@ class ApiToolEntity(Base, CommonMixin):
     id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
+        **UUID_PK_KWARGS,
         comment="工具全局唯一标识符(UUID)"
     )
 
