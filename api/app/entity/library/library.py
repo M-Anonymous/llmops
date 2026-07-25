@@ -103,6 +103,13 @@ class DocumentInfo(Base,CommonMixin):
         comment="关联的文件key"
     )
 
+    status: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False,
+        comment="文件状态: 0 unprocess, 1 load, 2 clean, 3 split, 4 complete"
+    )
+
 class ChunkInfo(Base,CommonMixin):
     __tablename__ = 'chunk_info'
 

@@ -29,29 +29,59 @@ request example:
 """
 
 class ApiToolRequest(BaseModel):
-    """
-    API 工具创建/更新请求模型
-    """
-    # 1. 基础标识信息
+    """API 工具创建请求模型"""
+
     name: str = Field(
         ...,
         max_length=100,
-        description="工具内部调用名(如 get_weather)，需全局唯一"
+        description="工具内部调用名(如 get_weather)，需全局唯一",
     )
     label: str = Field(
         ...,
         max_length=100,
-        description="工具显示名称(如 获取天气)"
+        description="工具显示名称(如 获取天气)",
     )
     desc: str = Field(
         ...,
-        description="工具描述(给大模型看的，建议写清楚用途和参数说明)"
+        description="工具描述(给大模型看的，建议写清楚用途和参数说明)",
     )
-
     api_config: dict = Field(
         ...,
-        description="API 调用配置(url, method, headers, body_template)"
+        description="API 调用配置(url, method, headers, body_template)",
     )
+    enabled: bool = Field(default=True, description="是否启用")
+
+
+class ApiToolUpdateRequest(BaseModel):
+    """API 工具更新请求模型"""
+
+    id: str = Field(..., description="工具ID")
+    name: Optional[str] = Field(default=None, max_length=100, description="工具内部调用名")
+    label: Optional[str] = Field(default=None, max_length=100, description="工具显示名称")
+    desc: Optional[str] = Field(default=None, description="工具描述")
+    api_config: Optional[dict] = Field(default=None, description="API 调用配置")
+    enabled: Optional[bool] = Field(default=None, description="是否启用")
+
+
+class ApiToolDeleteRequest(BaseModel):
+    """API 工具删除请求模型"""
+
+    id: str = Field(..., description="工具ID")
+
+
+class ApiToolInvokeRequest(BaseModel):
+    """API 工具调用请求模型"""
+
+    name: str = Field(
+        ...,
+        max_length=100,
+        description="工具内部调用名(如 get_weather)，不含 api_ 前缀",
+    )
+    arguments: dict = Field(
+        default_factory=dict,
+        description="工具调用参数，对应 schema 中的 parameters",
+    )
+
 
 # 定义支持的 JSON Schema 基本数据类型枚举
 class JsonSchemaType(str, Enum):
@@ -103,6 +133,7 @@ class Property(BaseModel):
 
 # 2. 完善 ApiConfig 模型
 class ApiConfig(BaseModel):
+
     base_url: str = Field(
         ...,
         description="API 基础域名 (如: https://api.example.com)"
@@ -116,14 +147,15 @@ class ApiConfig(BaseModel):
         description="HTTP 请求方法，仅支持 GET 或 POST"
     )
 
+
+    headers: List[Property] = Field(
+        default_factory=list,
+        description="HTTP 请求头配置 (如: Authorization, Content-Type)"
+    )
     # 使用 List[Property] 存储参数配置
     params: List[Property] = Field(
         default_factory=list,
         description="Query 查询参数配置 (通常用于 GET 请求)"
-    )
-    headers: List[Property] = Field(
-        default_factory=list,
-        description="HTTP 请求头配置 (如: Authorization, Content-Type)"
     )
     body: List[Property] = Field(
         default_factory=list,

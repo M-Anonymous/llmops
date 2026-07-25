@@ -28,6 +28,7 @@ class CeleryClient:
                 "worker",
                 broker=broker_url,
                 backend=result_backend_url,
+                include=["app.task.task"],
                 # 将其他配置以字典形式传入
                 config_overrides={
                     "task_ignore_result": ignore_result,

@@ -11,6 +11,30 @@ class APIToolRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def find_tool(self, tool_id: str, account_id: int) -> ApiToolEntity | None:
+        result = await self.db.execute(
+            select(ApiToolEntity)
+            .join(ApiToolRelation, ApiToolEntity.id == ApiToolRelation.tool_id)
+            .where(
+                ApiToolEntity.id == tool_id,
+                ApiToolRelation.account_id == account_id,
+            )
+        )
+        return result.scalar_one_or_none()
+
+    async def find_relation(
+        self,
+        tool_id: str,
+        account_id: int,
+    ) -> ApiToolRelation | None:
+        result = await self.db.execute(
+            select(ApiToolRelation).where(
+                ApiToolRelation.tool_id == tool_id,
+                ApiToolRelation.account_id == account_id,
+            )
+        )
+        return result.scalar_one_or_none()
+
     async def add_tool_with_relation(
         self,
         entity: ApiToolEntity,
@@ -31,6 +55,20 @@ class APIToolRepository:
             .order_by(ApiToolEntity.create_at.desc())
         )
         return list(result.scalars().all())
+
+    async def update_tool(self, entity: ApiToolEntity) -> ApiToolEntity:
+        await self.db.commit()
+        await self.db.refresh(entity)
+        return entity
+
+    async def delete_tool_with_relation(
+        self,
+        entity: ApiToolEntity,
+        relation: ApiToolRelation,
+    ) -> None:
+        await self.db.delete(relation)
+        await self.db.delete(entity)
+        await self.db.commit()
 
 
 async def get_api_tool_repository(

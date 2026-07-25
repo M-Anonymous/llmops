@@ -40,6 +40,11 @@ class DocumentRepository:
         await self.db.delete(entity)
         await self.db.commit()
 
+    async def update_document(self, entity: DocumentInfo) -> DocumentInfo:
+        await self.db.commit()
+        await self.db.refresh(entity)
+        return entity
+
 
 async def get_document_repository(
     db: AsyncSession = Depends(get_pg_session),
