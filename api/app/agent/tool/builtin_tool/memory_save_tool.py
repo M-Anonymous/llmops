@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import TypedDict
 
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolRuntime
@@ -17,23 +16,33 @@ store（长期记忆）：是 手动 保存的。它不会自动保存任何东�
 
 """
 
+
 @dataclass
 class Context:
-    account_id: int
+    account_id: int | None = None
+    visitor_id: str | None = None
+    library_ids: list[str] | None = None
+
+    @property
+    def user_key(self) -> str:
+        if self.account_id is not None:
+            return f"account:{self.account_id}"
+        if self.visitor_id:
+            return f"visitor:{self.visitor_id}"
+        return "anonymous"
+
 
 class UserInfo(BaseModel):
     name: str = Field(..., max_length=255, description="用户姓名")
     prefect: str = Field(..., max_length=255, description="用户爱好")
 
+
 @tool
-def save_user_info(user_info: UserInfo,runtime: ToolRuntime[Context]):
+def save_user_info(user_info: UserInfo, runtime: ToolRuntime[Context]):
     """保存用户信息"""
-    # Access the store - same as that provided to `create_agent`
     assert runtime.store is not None
     store = runtime.store
-    account_id = runtime.context.account_id
-    # Store data in the store (namespace, key, data)
-    store.put(("users",), str(account_id), dict(user_info))
+    store.put(("users",), runtime.context.user_key, dict(user_info))
     return "Successfully saved user info."
 
 
@@ -55,10 +64,6 @@ def get_user_info(runtime: ToolRuntime[Context]) -> str:
 
     如果用户不存在，返回 "Unknown user"。
     """
-    # Access the store - same as that provided to `create_agent`
     assert runtime.store is not None
-    account_id = runtime.context.account_id
-    # Retrieve data from store - returns StoreValue object with value and metadata
-    user_info = runtime.store.get(("users",), str(account_id))
+    user_info = runtime.store.get(("users",), runtime.context.user_key)
     return str(user_info.value) if user_info else "Unknown user"
-

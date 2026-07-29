@@ -7,7 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware import Middleware
 
 from app.component.database.postgres_client import PostgresClient
-from app.router import home_router,oauth_router,api_tool_router,file_router,library_router,session_router,test_router
+from app.router import (
+    home_router,
+    oauth_router,
+    api_tool_router,
+    file_router,
+    library_router,
+    session_router,
+    test_router,
+    agent_router,
+    model_router,
+    middleware_router,
+)
 
 @asynccontextmanager
 async def lifespan(fastapi: FastAPI):
@@ -41,6 +52,9 @@ app.include_router(oauth_router, prefix=API_PREFIX)
 app.include_router(api_tool_router, prefix=API_PREFIX)
 app.include_router(file_router, prefix=API_PREFIX)
 app.include_router(library_router, prefix=API_PREFIX)
+app.include_router(agent_router, prefix=API_PREFIX)
+app.include_router(model_router, prefix=API_PREFIX)
+app.include_router(middleware_router, prefix=API_PREFIX)
 
 app.include_router(session_router, prefix=API_PREFIX)
 app.include_router(test_router, prefix=API_PREFIX)

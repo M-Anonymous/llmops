@@ -165,8 +165,8 @@ export default function LibraryPage() {
 
       <header className="library-header">
         <div className="library-header-left">
-          <Link to="/" className="library-back-link">
-            ← 返回首页
+          <Link to="/admin" className="library-back-link">
+            ← 返回管理端
           </Link>
           <div>
             <p className="brand-eyebrow">Knowledge Base</p>

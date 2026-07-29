@@ -5,6 +5,20 @@ from .file.file_router import file_router
 from .library.library_router import library_router
 from .session.session_router import session_router
 from .test.test_router import test_router
+from .agent.agent_router import agent_router
+from .model.model_router import model_router
+from .middleware.middleware_router import middleware_router
 
 
-__all__ = ["home_router","oauth_router","api_tool_router","file_router","library_router","session_router","test_router"]
+__all__ = [
+    "home_router",
+    "oauth_router",
+    "api_tool_router",
+    "file_router",
+    "library_router",
+    "session_router",
+    "test_router",
+    "agent_router",
+    "model_router",
+    "middleware_router",
+]

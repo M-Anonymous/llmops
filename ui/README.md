@@ -61,7 +61,7 @@ cd ui && npm run dev
 |------|------|
 | `GITHUB_CLIENT_ID` | GitHub OAuth Client ID |
 | `GITHUB_CLIENT_SECRET` | GitHub OAuth Client Secret |
-| `GITHUB_REDIRECT_URI` | 回调地址，需与 GitHub App 一致，如 `http://localhost:8888/auth/authorize` |
+| `GITHUB_REDIRECT_URI` | 回调地址，需与 GitHub App 一致，如 `http://localhost:8888/api/auth/authorize` |
 | `FRONTEND_URL` | 登录成功后跳转的前端地址，默认 `http://localhost:5173` |
 
 ## 构建

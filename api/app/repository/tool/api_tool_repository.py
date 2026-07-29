@@ -56,6 +56,17 @@ class APIToolRepository:
         )
         return list(result.scalars().all())
 
+    async def list_enabled_tools_by_ids(self, tool_ids: list[str]) -> list[ApiToolEntity]:
+        if not tool_ids:
+            return []
+        result = await self.db.execute(
+            select(ApiToolEntity).where(
+                ApiToolEntity.id.in_(tool_ids),
+                ApiToolEntity.enabled.is_(True),
+            )
+        )
+        return list(result.scalars().all())
+
     async def update_tool(self, entity: ApiToolEntity) -> ApiToolEntity:
         await self.db.commit()
         await self.db.refresh(entity)

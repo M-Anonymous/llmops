@@ -1,3 +1,5 @@
+import { apiRequest } from './client'
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 export async function getGithubAuthorizationUrl(): Promise<string> {
@@ -20,4 +22,31 @@ export async function getGithubAuthorizationUrl(): Promise<string> {
   }
 
   return response.text()
+}
+
+export interface AuthMe {
+  id: number | null
+  authenticated: boolean
+  nickname: string | null
+  avatar: string | null
+}
+
+export async function getAuthMe(): Promise<AuthMe> {
+  try {
+    return await apiRequest<AuthMe>('/auth/me')
+  } catch {
+    // 代理打错服务 / 网络异常 / 旧接口 401 等，一律按未登录，避免首页整页报错
+    return {
+      id: null,
+      authenticated: false,
+      nickname: null,
+      avatar: null,
+    }
+  }
+}
+
+export async function logout(): Promise<void> {
+  await apiRequest<{ status: string }>('/auth/logout', {
+    method: 'POST',
+  })
 }

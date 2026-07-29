@@ -1,0 +1,233 @@
+.agent-debug-page .library-main {
+  max-width: 860px;
+}
+
+.agent-debug-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.agent-debug-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.agent-debug-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: min(72vh, 720px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(18, 20, 28, 0.82);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+
+.agent-debug-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.agent-debug-empty {
+  margin: auto;
+  text-align: center;
+  color: #94a3b8;
+  max-width: 360px;
+}
+
+.agent-debug-empty p {
+  margin: 0 0 8px;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+
+.agent-debug-empty span {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.agent-debug-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: min(85%, 640px);
+}
+
+.agent-debug-bubble--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.agent-debug-bubble--assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.agent-debug-role {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.agent-debug-content {
+  padding: 12px 14px;
+  border-radius: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+.agent-debug-bubble--user .agent-debug-content {
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: #e0f2fe;
+}
+
+.agent-debug-bubble--assistant .agent-debug-content {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e8eaef;
+}
+
+.agent-debug-composer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: end;
+  padding: 16px 20px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.agent-debug-composer textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 84px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 11, 16, 0.65);
+  color: #e8eaef;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.agent-debug-composer textarea:focus {
+  outline: none;
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+.agent-debug-composer textarea:disabled {
+  opacity: 0.7;
+}
+
+.agent-debug-composer .library-create-btn {
+  height: 44px;
+  white-space: nowrap;
+}
+
+.agent-hitl-card {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.agent-hitl-head h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  color: #fcd34d;
+}
+
+.agent-hitl-head p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.agent-hitl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agent-hitl-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.agent-hitl-item strong {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.agent-hitl-item p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.agent-hitl-item pre {
+  margin: 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #94a3b8;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  overflow: auto;
+  max-height: 160px;
+}
+
+.agent-hitl-allowed {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.agent-hitl-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.agent-hitl-actions .library-action-btn,
+.agent-hitl-actions .library-create-btn {
+  flex: 0 0 auto;
+  min-width: 96px;
+}
+
+@media (max-width: 640px) {
+  .agent-debug-composer {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-debug-composer .library-create-btn {
+    width: 100%;
+  }
+
+  .agent-hitl-actions {
+    flex-direction: column-reverse;
+  }
+
+  .agent-hitl-actions .library-action-btn,
+  .agent-hitl-actions .library-create-btn {
+    width: 100%;
+  }
+}

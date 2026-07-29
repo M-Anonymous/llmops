@@ -39,17 +39,16 @@ class PostgresClient:
 
         # --- 1. 创建用于 checkpointer 和 store 的连接池 ---
         # 注意：AsyncPostgresSaver 和 AsyncPostgresStore 需要异步连接池
-        cls._pool =  AsyncConnectionPool(
-            "postgresql://"+db_address,
+        # open=False：避免在构造函数里自动 open（已弃用），改为显式 await open()
+        cls._pool = AsyncConnectionPool(
+            "postgresql://" + db_address,
             min_size=1,
             max_size=5,
-            kwargs={"autocommit": True, "prepare_threshold": 0}  # 重要：LangGraph 需要 autocommit
+            open=False,
+            kwargs={"autocommit": True, "prepare_threshold": 0},  # LangGraph 需要 autocommit
         )
-        if cls._pool is None:
-            raise RuntimeError("Connection pool is not initialized.")
-
-        print("✅ 异步连接池已创建。")
         await cls._pool.open()
+        print("✅ 异步连接池已创建。")
 
         # --- 2. 初始化 Checkpointer (短期记忆) ---
         # 使用异步版本的 Saver，并传入连接池

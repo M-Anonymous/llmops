@@ -1,63 +1,65 @@
-import uuid
-
-from sqlalchemy import String, Integer
+from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.entity.parent.base import Base,CommonMixin
+from app.entity.parent.base import Base, CommonMixin, UUID_PK_KWARGS
 
 
-class ModelInfo:
-    __tablename__ = 'model_info'
+class ModelInfo(Base, CommonMixin):
 
-    # 1. 主键与基础标识
+    __tablename__ = "model_info"
+
     id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4().hex,
-        comment="模型全局唯一标识符(UUID)"
+        **UUID_PK_KWARGS,
+        comment="模型全局唯一标识符(UUID)",
     )
 
     account_id: Mapped[int] = mapped_column(
         Integer,
         default=None,
         nullable=False,
-        comment="关联的用户id"
+        comment="关联的用户id",
     )
 
     icon: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=True,  # 头像可能为空，建议改为允许为空
+        nullable=True,
         default=None,
-        comment="模型图标"
+        comment="模型图标",
     )
 
     label: Mapped[str] = mapped_column(
         String(100),
         nullable=False,
         default=None,
-        comment="模型显示名称"
+        comment="模型显示名称",
     )
-
 
     name: Mapped[str] = mapped_column(
         String(100),
         nullable=False,
         default=None,
-        comment="模型名称"
+        comment="模型名称",
     )
 
     api_key: Mapped[str] = mapped_column(
-        String(100),
+        String(512),
         nullable=False,
         default=None,
-        comment="模型名称"
+        comment="API Key",
     )
 
-    # 3. 字符串长度 + 注释
     desc: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
         default=None,
-        comment="知识库描述"
+        comment="模型描述",
     )
 
+    base_url: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        default=None,
+        comment="调用地址",
+    )

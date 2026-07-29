@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getGithubAuthorizationUrl } from '../api/auth'
 import '../styles/common.css'
 import './LoginPage.css'
@@ -49,7 +50,7 @@ export default function LoginPage() {
         </div>
 
         <p className="login-desc">
-          使用 GitHub 账号登录，管理 Agent、知识库与 API 工具。
+          使用 GitHub 账号登录后返回首页对话，并可进入管理端配置资源。
         </p>
 
         {error && (
@@ -69,7 +70,9 @@ export default function LoginPage() {
         </button>
 
         <p className="login-hint">
-          登录即表示你同意使用 GitHub OAuth 进行身份验证。
+          <Link to="/" style={{ color: '#94a3b8' }}>
+            先不登录，返回对话首页
+          </Link>
         </p>
       </main>
     </div>
