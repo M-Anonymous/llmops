@@ -25,6 +25,7 @@ dependencies = [
     "langchain-text-splitters>=1.1.2",
     "langgraph>=1.2.9",
     "langgraph-checkpoint-postgres>=3.1.0",
+    "mcp>=1.9.0,<2",
     "pathlib>=1.0.1",
     "pgvector>=0.3.6",
     "psycopg2-binary>=2.9.12",

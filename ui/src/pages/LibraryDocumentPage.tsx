@@ -168,7 +168,7 @@ export default function LibraryDocumentPage() {
 
   useEffect(() => {
     if (!libraryId) {
-      navigate('/library', { replace: true })
+      navigate('/admin/library', { replace: true })
       return
     }
     void loadDocuments()
@@ -447,7 +447,7 @@ export default function LibraryDocumentPage() {
 
       <header className="library-header">
         <div className="library-header-left">
-          <Link to="/library" className="library-back-link">
+          <Link to="/admin/library" className="library-back-link">
             ← 返回知识库
           </Link>
           <div>

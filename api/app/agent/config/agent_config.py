@@ -7,12 +7,18 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 
+from app.agent.config.runtime_config import resolve_runtime_config
 from app.agent.middleware.system_middleware import SystemMiddleware
 from app.agent.tool.api_tool.api_tool_entity_2_tool import get_api_tool_from_entity
 from app.agent.tool.builtin_tool.library_search_tool import search_knowledge_base
 from app.agent.tool.builtin_tool.memory_save_tool import get_user_info, save_user_info
+from app.agent.tool.mcp.mcp_tool_loader import load_mcp_tools_from_servers
 from app.entity.agent.agent import AgentConfig as AgentEntity
 from app.repository.agent.agent_repository import AgentRepository, get_agent_repository
+from app.repository.mcp.mcp_server_repository import (
+    McpServerRepository,
+    get_mcp_server_repository,
+)
 from app.repository.middleware.middleware_repository import (
     MiddlewareRepository,
     get_middleware_repository,
@@ -32,11 +38,13 @@ class AgentConfig:
         model_repository: ModelRepository,
         api_tool_repository: APIToolRepository,
         middleware_repository: MiddlewareRepository,
+        mcp_server_repository: McpServerRepository,
     ):
         self.agent_repository = agent_repository
         self.model_repository = model_repository
         self.api_tool_repository = api_tool_repository
         self.middleware_repository = middleware_repository
+        self.mcp_server_repository = mcp_server_repository
 
     async def _get_agent(self, agent_id: str) -> AgentEntity:
         agent = await self.agent_repository.find_agent_by_id(agent_id)
@@ -46,6 +54,8 @@ class AgentConfig:
 
     async def get_agent_model(self, agent_id: str) -> BaseChatModel:
         agent = await self._get_agent(agent_id)
+        llm_params = resolve_runtime_config(agent.runtime_config)
+
         if agent.model_id:
             model_info = await self.model_repository.find_model(
                 agent.model_id,
@@ -56,7 +66,7 @@ class AgentConfig:
                     model=model_info.name,
                     api_key=model_info.api_key,  # noqa
                     base_url=model_info.base_url,
-                    temperature=0.7,
+                    **llm_params,
                 )
 
         # 未配置模型时回退到环境变量
@@ -64,7 +74,7 @@ class AgentConfig:
             model=os.getenv("QWEN_LLM_NAME", ""),
             api_key=os.getenv("QWEN_API_KEY", ""),
             base_url=os.getenv("QWEN_LLM_BASE_URL", ""),
-            temperature=0.7,
+            **llm_params,
         )
 
     async def get_agent_system_prompt(self, agent_id: str) -> str:
@@ -81,16 +91,28 @@ class AgentConfig:
         tools: list[BaseTool] = [save_user_info, get_user_info, search_knowledge_base]
 
         tool_ids = agent.tool_ids or []
-        if not tool_ids:
-            return tools
+        if tool_ids:
+            entities = await self.api_tool_repository.list_enabled_tools_by_ids(tool_ids)
+            entity_map = {entity.id: entity for entity in entities}
+            for tool_id in tool_ids:
+                entity = entity_map.get(tool_id)
+                if entity is None:
+                    continue
+                tools.append(get_api_tool_from_entity(entity))
 
-        entities = await self.api_tool_repository.list_enabled_tools_by_ids(tool_ids)
-        entity_map = {entity.id: entity for entity in entities}
-        for tool_id in tool_ids:
-            entity = entity_map.get(tool_id)
-            if entity is None:
-                continue
-            tools.append(get_api_tool_from_entity(entity))
+        mcp_server_ids = [item for item in (agent.mcp_server_ids or []) if item]
+        if mcp_server_ids:
+            servers = await self.mcp_server_repository.list_enabled_by_ids(mcp_server_ids)
+            server_map = {server.id: server for server in servers}
+            ordered_servers = [
+                server_map[sid] for sid in mcp_server_ids if sid in server_map
+            ]
+            mcp_tools = await load_mcp_tools_from_servers(
+                ordered_servers,
+                tool_cache=agent.mcp_tool_cache,
+            )
+            tools.extend(mcp_tools)
+
         return tools
 
     async def get_agent_middlewares(
@@ -144,10 +166,12 @@ async def get_agent_config(
     model_repository: ModelRepository = Depends(get_model_repository),
     api_tool_repository: APIToolRepository = Depends(get_api_tool_repository),
     middleware_repository: MiddlewareRepository = Depends(get_middleware_repository),
+    mcp_server_repository: McpServerRepository = Depends(get_mcp_server_repository),
 ) -> AgentConfig:
     return AgentConfig(
         agent_repository=agent_repository,
         model_repository=model_repository,
         api_tool_repository=api_tool_repository,
         middleware_repository=middleware_repository,
+        mcp_server_repository=mcp_server_repository,
     )

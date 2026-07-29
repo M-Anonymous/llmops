@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import {
   createModel,
@@ -173,18 +173,9 @@ export default function ModelPage() {
   }
 
   return (
-    <div className="library-page">
-      <div className="page-bg" aria-hidden="true">
-        <div className="page-bg-glow page-bg-glow--left" />
-        <div className="page-bg-glow page-bg-glow--right" />
-        <div className="page-bg-grid" />
-      </div>
-
+    <div className="admin-panel">
       <header className="library-header">
         <div className="library-header-left">
-          <Link to="/admin" className="library-back-link">
-            ← 返回管理端
-          </Link>
           <div>
             <p className="brand-eyebrow">Models</p>
             <h1 className="library-title">模型管理</h1>

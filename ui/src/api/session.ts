@@ -91,6 +91,16 @@ export function getSessionMessages(params: {
   }>(`/session/messages?${query.toString()}`)
 }
 
+export function deleteSession(params: {
+  session_id: string
+  visitor_id?: string
+}) {
+  return apiRequest<{ status: string }>('/session/delete', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  })
+}
+
 async function* readSseStream(
   response: Response,
 ): AsyncGenerator<SessionStreamEvent, void, unknown> {

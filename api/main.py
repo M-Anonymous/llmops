@@ -18,6 +18,7 @@ from app.router import (
     agent_router,
     model_router,
     middleware_router,
+    mcp_server_router,
 )
 
 @asynccontextmanager
@@ -55,6 +56,7 @@ app.include_router(library_router, prefix=API_PREFIX)
 app.include_router(agent_router, prefix=API_PREFIX)
 app.include_router(model_router, prefix=API_PREFIX)
 app.include_router(middleware_router, prefix=API_PREFIX)
+app.include_router(mcp_server_router, prefix=API_PREFIX)
 
 app.include_router(session_router, prefix=API_PREFIX)
 app.include_router(test_router, prefix=API_PREFIX)

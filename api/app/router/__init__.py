@@ -8,6 +8,7 @@ from .test.test_router import test_router
 from .agent.agent_router import agent_router
 from .model.model_router import model_router
 from .middleware.middleware_router import middleware_router
+from .mcp.mcp_server_router import mcp_server_router
 
 
 __all__ = [
@@ -21,4 +22,5 @@ __all__ = [
     "agent_router",
     "model_router",
     "middleware_router",
+    "mcp_server_router",
 ]

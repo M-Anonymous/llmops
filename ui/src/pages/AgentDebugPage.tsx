@@ -101,7 +101,7 @@ export default function AgentDebugPage() {
 
   useEffect(() => {
     if (!agentId) {
-      navigate('/agent', { replace: true })
+      navigate('/admin/agent', { replace: true })
       return
     }
     void loadAgent()
@@ -277,7 +277,7 @@ export default function AgentDebugPage() {
 
       <header className="library-header">
         <div className="library-header-left">
-          <Link to="/agent" className="library-back-link">
+          <Link to="/admin/agent" className="library-back-link">
             ← 返回 Agent 列表
           </Link>
           <div>
@@ -319,7 +319,7 @@ export default function AgentDebugPage() {
         ) : !agent ? (
           <div className="library-empty">
             <p>未找到 Agent</p>
-            <Link to="/agent" className="library-create-btn">
+            <Link to="/admin/agent" className="library-create-btn">
               返回列表
             </Link>
           </div>

@@ -578,18 +578,9 @@ export default function MiddlewarePage() {
   }
 
   return (
-    <div className="library-page middleware-page">
-      <div className="page-bg" aria-hidden="true">
-        <div className="page-bg-glow page-bg-glow--left" />
-        <div className="page-bg-glow page-bg-glow--right" />
-        <div className="page-bg-grid" />
-      </div>
-
+    <div className="admin-panel middleware-page">
       <header className="library-header">
         <div className="library-header-left">
-          <Link to="/admin" className="library-back-link">
-            ← 返回管理端
-          </Link>
           <div>
             <p className="brand-eyebrow">Middleware</p>
             <h1 className="library-title">中间件管理</h1>
@@ -778,7 +769,7 @@ export default function MiddlewarePage() {
                     <span>摘要模型</span>
                     {models.length === 0 ? (
                       <p className="middleware-hint">
-                        暂无模型，请先去 <Link to="/model">模型管理</Link> 创建
+                        暂无模型，请先去 <Link to="/admin/model">模型管理</Link> 创建
                       </p>
                     ) : (
                       <select
@@ -1053,7 +1044,7 @@ export default function MiddlewarePage() {
                             <span>工具</span>
                             {tools.length === 0 ? (
                               <p className="middleware-hint">
-                                暂无可用工具，请先去 <Link to="/tool">API 工具</Link> 创建
+                                暂无可用工具，请先去 <Link to="/admin/tool">API 工具</Link> 创建
                               </p>
                             ) : (
                               <select

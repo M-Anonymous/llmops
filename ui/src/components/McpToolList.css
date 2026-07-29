@@ -1,0 +1,145 @@
+.mcp-tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mcp-tool-list--modal {
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.mcp-tool-item {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(15, 18, 28, 0.65);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.mcp-tool-item:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(20, 24, 36, 0.85);
+}
+
+.mcp-tool-item.is-selected {
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.mcp-tool-item-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.mcp-tool-item-label input[type='checkbox'] {
+  margin-top: 4px;
+  flex-shrink: 0;
+  accent-color: #38bdf8;
+}
+
+.mcp-tool-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mcp-tool-item-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.mcp-tool-item-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.01em;
+}
+
+.mcp-tool-item-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #bae6fd;
+  background: rgba(56, 189, 248, 0.18);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.mcp-tool-item-desc {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mcp-tool-item-desc--empty {
+  color: #64748b;
+  font-style: italic;
+}
+
+.mcp-tool-item-static {
+  padding: 12px 14px;
+}
+
+.mcp-tool-list-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.mcp-tool-list-toolbar span {
+  color: #64748b;
+  font-size: 0.8125rem;
+}
+
+.mcp-tool-list-toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mcp-tool-list-toolbar-actions button {
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.mcp-tool-list-toolbar-actions button:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #e0f2fe;
+}
+
+.mcp-tool-list-toolbar-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mcp-tool-list-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+}

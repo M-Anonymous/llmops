@@ -319,3 +319,47 @@
     grid-template-columns: 1fr;
   }
 }
+
+.library-alert--success {
+  border-color: rgba(52, 211, 153, 0.35);
+  background: rgba(16, 185, 129, 0.12);
+  color: #a7f3d0;
+}
+
+.mcp-test-tool-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+}
+
+.mcp-test-tool-list code {
+  color: #e0f2fe;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.mcp-form-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.mcp-form-actions .library-action-btn:nth-child(2) {
+  margin-right: auto;
+}
+
+.mcp-tools-modal-list {
+  max-height: 360px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mcp-tools-modal-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mcp-tools-modal-list li:last-child {
+  border-bottom: none;
+}

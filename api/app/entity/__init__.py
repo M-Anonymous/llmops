@@ -7,6 +7,7 @@ from .vector.vector_store import VectorStore
 from .agent.agent import AgentConfig
 from .session.session import SessionInfo
 from .middleware.middleware import MiddlewareInfo
+from .mcp.mcp_server import McpServerInfo
 
 __all__ = [
     Base,
@@ -22,5 +23,6 @@ __all__ = [
     ModelInfo,
     SessionInfo,
     MiddlewareInfo,
+    McpServerInfo,
 ]
 

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getAuthMe, logout } from '../api/auth'
 import { ApiError } from '../api/client'
 import {
+  deleteSession,
   getSessionList,
   getSessionMessages,
   sessionResume,
@@ -53,6 +54,7 @@ export default function HomePage() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [sessions, setSessions] = useState<SessionInfo[]>([])
   const [sessionsLoading, setSessionsLoading] = useState(false)
+  const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
   const [loadingHistory, setLoadingHistory] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -196,6 +198,38 @@ export default function HomePage() {
       }
     } finally {
       setLoadingHistory(false)
+    }
+  }
+
+  async function handleDeleteSession(item: SessionInfo) {
+    if (sending || deletingSessionId) {
+      return
+    }
+    const title = item.title || '新会话'
+    const confirmed = window.confirm(`确定删除会话「${title}」吗？此操作不可恢复。`)
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingSessionId(item.id)
+    setError(null)
+    try {
+      await deleteSession({
+        session_id: item.id,
+        visitor_id: authenticated ? undefined : visitorId,
+      })
+      setSessions((prev) => prev.filter((session) => session.id !== item.id))
+      if (sessionId === item.id) {
+        resetChat()
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message)
+      } else {
+        setError(err instanceof Error ? err.message : '删除会话失败')
+      }
+    } finally {
+      setDeletingSessionId(null)
     }
   }
 
@@ -423,16 +457,33 @@ export default function HomePage() {
               <p className="chat-history-empty">暂无会话</p>
             ) : (
               sessions.map((item) => (
-                <button
+                <div
                   key={item.id}
-                  type="button"
-                  className={`chat-history-item${sessionId === item.id ? ' is-active' : ''}`}
-                  onClick={() => void handleSelectSession(item.id)}
-                  disabled={sending || loadingHistory}
-                  title={item.title || '新会话'}
+                  className={`chat-history-row${sessionId === item.id ? ' is-active' : ''}`}
                 >
-                  {item.title || '新会话'}
-                </button>
+                  <button
+                    type="button"
+                    className="chat-history-item"
+                    onClick={() => void handleSelectSession(item.id)}
+                    disabled={sending || loadingHistory || deletingSessionId === item.id}
+                    title={item.title || '新会话'}
+                  >
+                    {item.title || '新会话'}
+                  </button>
+                  <button
+                    type="button"
+                    className="chat-history-delete"
+                    aria-label={`删除会话 ${item.title || '新会话'}`}
+                    title="删除会话"
+                    disabled={sending || loadingHistory || deletingSessionId === item.id}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      void handleDeleteSession(item)
+                    }}
+                  >
+                    {deletingSessionId === item.id ? '…' : '×'}
+                  </button>
+                </div>
               ))
             )}
           </div>

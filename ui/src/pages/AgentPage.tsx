@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import {
   createAgent,
@@ -144,18 +144,9 @@ export default function AgentPage() {
   }
 
   return (
-    <div className="library-page agent-page">
-      <div className="page-bg" aria-hidden="true">
-        <div className="page-bg-glow page-bg-glow--left" />
-        <div className="page-bg-glow page-bg-glow--right" />
-        <div className="page-bg-grid" />
-      </div>
-
+    <div className="admin-panel agent-page">
       <header className="library-header">
         <div className="library-header-left">
-          <Link to="/admin" className="library-back-link">
-            ← 返回管理端
-          </Link>
           <div>
             <p className="brand-eyebrow">Agents</p>
             <h1 className="library-title">Agent 管理</h1>
@@ -212,6 +203,18 @@ export default function AgentPage() {
                   <div>
                     <dt>中间件</dt>
                     <dd>{agent.middlewareIds?.length ?? 0} 个</dd>
+                  </div>
+                  <div>
+                    <dt>MCP</dt>
+                    <dd>
+                      {agent.mcpServerIds?.length ?? 0} 个
+                      {Object.keys(agent.mcpToolCache ?? {}).length > 0
+                        ? ` · ${Object.values(agent.mcpToolCache ?? {}).reduce(
+                            (sum, tools) => sum + (tools?.length ?? 0),
+                            0,
+                          )} 工具`
+                        : ''}
+                    </dd>
                   </div>
                   <div>
                     <dt>更新时间</dt>

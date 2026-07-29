@@ -29,6 +29,9 @@ class AgentService:
             "libraryIds": entity.library_ids or [],
             "toolIds": entity.tool_ids or [],
             "middlewareIds": entity.middleware_ids or [],
+            "mcpServerIds": entity.mcp_server_ids or [],
+            "runtimeConfig": entity.runtime_config or {"preset": "balanced"},
+            "mcpToolCache": entity.mcp_tool_cache or {},
             "createAt": entity.create_at,
             "updateAt": entity.update_at,
         }

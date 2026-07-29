@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import {
   createTool,
@@ -578,18 +578,9 @@ export default function ToolPage() {
   }
 
   return (
-    <div className="library-page tool-page">
-      <div className="page-bg" aria-hidden="true">
-        <div className="page-bg-glow page-bg-glow--left" />
-        <div className="page-bg-glow page-bg-glow--right" />
-        <div className="page-bg-grid" />
-      </div>
-
+    <div className="admin-panel tool-page">
       <header className="library-header">
         <div className="library-header-left">
-          <Link to="/admin" className="library-back-link">
-            ← 返回管理端
-          </Link>
           <div>
             <p className="brand-eyebrow">API Tools</p>
             <h1 className="library-title">API 工具管理</h1>

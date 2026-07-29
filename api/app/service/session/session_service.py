@@ -232,7 +232,9 @@ class SessionService:
     async def delete_session(self, request: SessionRequest) -> None:
         if not request.session_id:
             raise HTTPException(status_code=400, detail="删除会话时 session_id 必填")
+        self._require_identity(request.visitor_id)
         entity = await self.get_session(request.session_id)
+        self._assert_session_owner(entity, request.visitor_id)
         await self.session_repository.delete_session(entity)
         AgentSessionPool.remove_session(entity.id)
 

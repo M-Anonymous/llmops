@@ -289,10 +289,29 @@
   font-size: 0.85rem;
 }
 
-.chat-history-item {
-  width: 100%;
-  padding: 10px 12px;
+.chat-history-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   border: 1px solid transparent;
+  border-radius: 10px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.chat-history-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.chat-history-row.is-active {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.28);
+}
+
+.chat-history-item {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 8px 10px 12px;
+  border: none;
   border-radius: 10px;
   background: transparent;
   color: #94a3b8;
@@ -303,22 +322,53 @@
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease;
 }
 
-.chat-history-item:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
+.chat-history-row:hover .chat-history-item,
+.chat-history-row.is-active .chat-history-item {
   color: #e2e8f0;
 }
 
-.chat-history-item.is-active {
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.28);
+.chat-history-row.is-active .chat-history-item {
   color: #e0f2fe;
 }
 
 .chat-history-item:disabled {
   opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.chat-history-delete {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.chat-history-row:hover .chat-history-delete,
+.chat-history-row.is-active .chat-history-delete,
+.chat-history-delete:focus-visible {
+  opacity: 1;
+}
+
+.chat-history-delete:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fca5a5;
+}
+
+.chat-history-delete:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 

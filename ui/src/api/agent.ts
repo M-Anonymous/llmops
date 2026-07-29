@@ -1,5 +1,14 @@
 import { apiRequest } from './client'
 
+export type RuntimePreset = 'creative' | 'balanced' | 'precise' | 'custom'
+
+export interface AgentRuntimeConfig {
+  preset: RuntimePreset
+  temperature?: number
+  top_p?: number
+  max_tokens?: number
+}
+
 export interface Agent {
   id: string
   accountId: number
@@ -11,6 +20,9 @@ export interface Agent {
   libraryIds: string[]
   toolIds: string[]
   middlewareIds: string[]
+  mcpServerIds: string[]
+  runtimeConfig: AgentRuntimeConfig
+  mcpToolCache: Record<string, string[]>
   createAt: string
   updateAt: string
 }
@@ -31,6 +43,9 @@ export interface AgentUpdateInput {
   library_ids?: string[]
   tool_ids?: string[]
   middleware_ids?: string[]
+  mcp_server_ids?: string[]
+  runtime_config?: AgentRuntimeConfig
+  mcp_tool_cache?: Record<string, string[]>
 }
 
 export function getAgentList() {
